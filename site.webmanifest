@@ -1,0 +1,10 @@
+{
+  "name": "Orrery",
+  "short_name": "Orrery",
+  "description": "Observability for systems in motion.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0e18",
+  "theme_color": "#0a0e18",
+  "icons": [{ "src": "assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

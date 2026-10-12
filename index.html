@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orrery</title>
+<meta name="description" content="Orrery is an observability platform for systems in motion: live topology, traces, drift alerts and deploy forecasts in one model of your stack.">
+<meta name="theme-color" content="#0a0e18" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef1f6" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Orrery · The instrument for systems in motion">
+<meta property="og:description" content="Live topology, traces, drift alerts and deploy forecasts in one model of your stack.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+<script>
+  (function () {
+    try {
+      var r = document.documentElement;
+      var t = localStorage.getItem('orrery-theme');
+      if (t === 'light' || t === 'dark') r.setAttribute('data-theme', t);
+      var m = localStorage.getItem('orrery-motion');
+      if (m === 'reduced' || m === 'full') r.setAttribute('data-motion', m);
+    } catch (e) {}
+  })();
+</script>
+<script src="assets/js/app.js" defer></script>
+<script src="assets/js/orrery.js" defer></script>
+<script src="assets/js/console.js" defer></script>
+<script src="assets/js/globe.js" defer></script>
+<script src="assets/js/sections.js" defer></script>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.6A8.4 8.4 0 0 1 9.4 4 8.4 8.4 0 1 0 20 14.6Z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12.5" rx="1.5"/><path d="M8.5 20.5h7M12 16.5v4"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19.5v-15M6 10.5l6-6 6 6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="1.5"/><path d="M15.5 8.5V5.5A1.5 1.5 0 0 0 14 4H5.5A1.5 1.5 0 0 0 4 5.5V14a1.5 1.5 0 0 0 1.5 1.5h3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 4.8 4.8L19.5 7"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.5 5.5v13M15.5 5.5v13"/></symbol>
+  <symbol id="i-enter" viewBox="0 0 24 24"><path d="M9 10.5 4.5 15 9 19.5"/><path d="M19.5 4.5V11a4 4 0 0 1-4 4H4.5"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></symbol>
+  <symbol id="i-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.6"/><ellipse cx="12" cy="12" rx="9.5" ry="4.6" transform="rotate(-20 12 12)"/><circle cx="20.6" cy="9" r="1.2"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/><path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M7.5 14h9"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2.5 12c2.4-4.6 4.8-4.6 7.1 0s4.8 4.6 7.2 0c1.3-2.5 2.6-3.4 4.7-2.6"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="1.5"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15h4.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3Z"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" data-header>
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="Orrery, back to top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" class="bm-ring"/>
+        <circle cx="16" cy="16" r="8" class="bm-ring"/>
+        <circle cx="16" cy="16" r="3.6" class="bm-sun"/>
+        <g class="bm-orbit bm-orbit-a"><circle cx="29" cy="16" r="2.1" class="bm-planet"/></g>
+        <g class="bm-orbit bm-orbit-b"><circle cx="16" cy="8" r="1.4" class="bm-moon"/></g>
+      </svg>
+      <span class="brand-word">Orrery</span>
+    </a>
+
+    <nav class="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="#instruments">Instruments</a></li>
+        <li><a href="#console">Console</a></li>
+        <li><a href="#coverage">Coverage</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#ephemeris">Changelog</a></li>
+      </ul>
+      <span class="nav-indicator" aria-hidden="true"></span>
+    </nav>
+
+    <div class="header-actions">
+      <button class="search-trigger" type="button" data-open-palette aria-label="Open command palette">
+        <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+        <span class="search-label">Search</span>
+        <kbd data-mod-key>⌘K</kbd>
+      </button>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        <svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
+      <a class="btn btn-quiet hide-md" href="#" data-demo="Sign-in">Sign in</a>
+      <a class="btn btn-primary btn-sm hide-sm" href="#cta">Start free</a>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu" data-menu-toggle>
+        <svg class="i i-open" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="i i-close" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <nav class="wrap" aria-label="Mobile">
+      <a href="#instruments">Instruments</a>
+      <a href="#console">Console</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#ephemeris">Changelog</a>
+      <a href="#faq">Questions</a>
+      <a class="btn btn-primary" href="#cta">Start free</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ─────────────────────────── Hero ─────────────────────────── -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <canvas class="hero-stars" aria-hidden="true"></canvas>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <a class="announce" href="#ephemeris">
+          <span class="announce-tag">v4.2</span>
+          <span class="announce-text">Deploy forecasts are generally available</span>
+          <svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+        </a>
+        <h1 class="hero-title" id="hero-title">
+          <span class="line"><span>The instrument</span></span>
+          <span class="line"><span>for systems</span></span>
+          <span class="line"><span><em>in motion.</em></span></span>
+        </h1>
+        <p class="hero-lede">Orrery maps every service, queue and region into one live model. See how traffic moves, catch drift before it turns into an outage, and know what a deploy will do before you merge it.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary btn-lg magnetic" href="#cta">
+            Start observing
+            <svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </a>
+          <div class="install">
+            <code><span class="install-prompt" aria-hidden="true">$</span> npx orrery init</code>
+            <button class="install-copy" type="button" data-copy="npx orrery init" aria-label="Copy install command">
+              <svg class="i i-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+              <svg class="i i-check" aria-hidden="true"><use href="#i-check"/></svg>
+            </button>
+          </div>
+        </div>
+        <ul class="hero-trust" aria-label="Highlights">
+          <li>Free up to 10M spans a month</li>
+          <li>OpenTelemetry native</li>
+          <li>SOC 2 Type II</li>
+        </ul>
+      </div>
+
+      <figure class="hero-visual">
+        <div class="orrery-stage" data-orrery>
+          <canvas class="orrery-canvas" role="img" aria-label="An animated orrery. Seven services orbit an ingress core, the busiest closest in. payments-api is flagged for latency drift."></canvas>
+          <span class="plate-mark tl" aria-hidden="true"></span>
+          <span class="plate-mark tr" aria-hidden="true"></span>
+          <span class="plate-mark bl" aria-hidden="true"></span>
+          <span class="plate-mark br" aria-hidden="true"></span>
+          <div class="hud hud-tl" aria-hidden="true">
+            <span class="hud-k">Fig. 1</span>
+            <span>acme-prod · 7 services</span>
+          </div>
+          <div class="hud hud-tr" aria-hidden="true">
+            <span class="legend"><i class="dot dot-ok"></i>Nominal</span>
+            <span class="legend"><i class="dot dot-warn"></i>Drifting</span>
+          </div>
+          <div class="hud hud-bl" aria-hidden="true">
+            <span class="hud-k">Epoch</span>
+            <span>JD <span data-jd>2461325.50000</span></span>
+          </div>
+          <div class="hud hud-br" aria-hidden="true" data-orrery-readout>θ 000.0° · r 0.00</div>
+          <div class="orrery-tip" data-orrery-tip hidden></div>
+        </div>
+        <figcaption class="orrery-caption">Each body is a service in acme-prod. Busier services orbit closer and faster, as Kepler would have it. Hover a body to read its orbit, or click the core.</figcaption>
+      </figure>
+    </div>
+
+    <div class="wrap">
+      <dl class="readouts">
+        <div class="readout">
+          <dt>Spans ingested daily</dt>
+          <dd><span data-count="4.1" data-decimals="1">4.1</span><span class="unit">T</span></dd>
+        </div>
+        <div class="readout">
+          <dt>p99 query latency</dt>
+          <dd><span data-count="38">38</span><span class="unit">ms</span></dd>
+        </div>
+        <div class="readout">
+          <dt>Integrations</dt>
+          <dd><span data-count="190">190</span><span class="unit">+</span></dd>
+        </div>
+        <div class="readout">
+          <dt>Uptime SLA</dt>
+          <dd><span data-count="99.995" data-from="99" data-decimals="3">99.995</span><span class="unit">%</span></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Logos ─────────────────────────── -->
+  <section class="logos" aria-label="Teams using Orrery">
+    <div class="wrap logos-inner">
+      <p class="logos-label">In production at</p>
+      <div class="marquee" data-marquee>
+        <ul class="marquee-track">
+          <li class="logo logo-a"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 18 18H2z"/></svg>Fernhollow</li>
+          <li class="logo logo-b"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="3"/></svg>QUAYSIDE</li>
+          <li class="logo logo-c"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3h6v6H3zM11 11h6v6h-6zM11 3h6v6h-6z"/></svg>tessellate</li>
+          <li class="logo logo-d">Oakmere<sup>&deg;</sup></li>
+          <li class="logo logo-e"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 16C6 2 14 2 18 16"/></svg>Parabola</li>
+          <li class="logo logo-f"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4l7 12 7-12"/></svg>Vireo Health</li>
+          <li class="logo logo-g">COBALT<span>/</span>RAIL</li>
+          <li class="logo logo-h"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 15l5-7 4 4 3-5 4 8z"/></svg>Moraine</li>
+          <li class="logo logo-i">saltmarsh.</li>
+          <li class="logo logo-j"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 12c4-6 12-6 16 0M6 12c2-3 6-3 8 0"/></svg>Kittiwake</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Instruments ─────────────────────────── -->
+  <section class="section" id="instruments" aria-labelledby="instruments-title">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow" data-scramble>Instruments</p>
+        <h2 class="section-title" id="instruments-title">Six instruments. <em>One model</em> of your system.</h2>
+        <p class="section-lede">Every instrument reads from the same live model. A slow span in a trace, a drift alert and a deploy forecast all point at the same service, the same minute and the same line of code.</p>
+      </header>
+
+      <div class="bento">
+        <!-- Topology -->
+        <article class="card spot card-topology reveal">
+          <div class="card-copy">
+            <p class="card-kicker">Topology</p>
+            <h3 class="card-title">A service map drawn by real traffic</h3>
+            <p class="card-text">Orrery builds the map from the requests it sees. There are no diagrams to maintain, and every edge carries its own latency and error budget. Hover a service to trace its calls.</p>
+          </div>
+          <div class="card-visual">
+            <ul class="topo-stats" aria-label="Map summary">
+              <li><strong>7</strong> services</li>
+              <li><strong>9</strong> edges</li>
+              <li><strong>41.6k</strong> rps</li>
+              <li class="is-warn"><strong>1</strong> drifting</li>
+            </ul>
+            <svg class="topo" viewBox="0 0 520 300" role="img" aria-label="Service map: edge calls gateway; gateway calls auth, payments and search; payments calls ledger and queue." data-topo>
+              <defs>
+                <marker id="topo-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 8 4 0 8z" class="topo-arrowhead"/></marker>
+              </defs>
+              <g class="topo-grid" aria-hidden="true">
+                <circle cx="260" cy="150" r="70"/><circle cx="260" cy="150" r="130"/><circle cx="260" cy="150" r="190"/>
+              </g>
+              <g class="topo-edges">
+                <path class="edge" data-n="edge gw" d="M78 150 C110 150 120 150 150 150" />
+                <path class="edge" data-n="gw auth" d="M188 140 C215 100 240 78 272 70" />
+                <path class="edge" data-n="gw pay" d="M190 152 C220 155 250 158 280 160" />
+                <path class="edge" data-n="gw search" d="M188 162 C215 205 240 232 272 242" />
+                <path class="edge" data-n="pay ledger" d="M318 152 C350 135 380 120 410 113" />
+                <path class="edge is-hot" data-n="pay queue" d="M318 170 C350 190 380 205 410 214" />
+                <path class="edge" data-n="queue ledger" d="M430 200 C440 175 440 150 432 130" />
+                <path class="edge" data-n="auth ledger" d="M310 66 C350 70 385 82 412 98" />
+                <path class="edge" data-n="search queue" d="M310 248 C350 248 380 236 410 226" />
+              </g>
+              <g class="topo-flow" aria-hidden="true">
+                <path class="flow" d="M78 150 C110 150 120 150 150 150" />
+                <path class="flow" d="M188 140 C215 100 240 78 272 70" />
+                <path class="flow f-2" d="M190 152 C220 155 250 158 280 160" />
+                <path class="flow f-3" d="M188 162 C215 205 240 232 272 242" />
+                <path class="flow f-2" d="M318 152 C350 135 380 120 410 113" />
+                <path class="flow f-hot" d="M318 170 C350 190 380 205 410 214" />
+                <path class="flow f-3" d="M310 248 C350 248 380 236 410 226" />
+              </g>
+              <g class="topo-nodes">
+                <g class="node" data-id="edge" transform="translate(60 150)" tabindex="0" role="button" aria-label="edge, 18.2k requests per second"><circle r="17" class="ring"/><circle r="4" class="core"/><text y="34">edge</text></g>
+                <g class="node" data-id="gw" transform="translate(170 150)" tabindex="0" role="button" aria-label="api-gateway, p99 64 milliseconds"><circle r="19" class="ring"/><circle r="4.5" class="core"/><text y="36">gateway</text></g>
+                <g class="node" data-id="auth" transform="translate(292 66)" tabindex="0" role="button" aria-label="auth, p99 31 milliseconds"><circle r="17" class="ring"/><circle r="4" class="core"/><text y="-26">auth</text></g>
+                <g class="node is-warn" data-id="pay" transform="translate(300 160)" tabindex="0" role="button" aria-label="payments-api, drifting, p99 212 milliseconds"><circle r="24" class="halo"/><circle r="19" class="ring"/><circle r="4.5" class="core"/><text y="38">payments</text></g>
+                <g class="node" data-id="search" transform="translate(292 246)" tabindex="0" role="button" aria-label="search, p99 88 milliseconds"><circle r="17" class="ring"/><circle r="4" class="core"/><text y="34">search</text></g>
+                <g class="node" data-id="ledger" transform="translate(430 112)" tabindex="0" role="button" aria-label="ledger, p99 120 milliseconds"><circle r="18" class="ring"/><circle r="4" class="core"/><text y="-26">ledger</text></g>
+                <g class="node" data-id="queue" transform="translate(430 218)" tabindex="0" role="button" aria-label="queue, depth 1.2k"><circle r="17" class="ring"/><circle r="4" class="core"/><text y="34">queue</text></g>
+              </g>
+            </svg>
+            <dl class="topo-readout" aria-live="polite">
+              <div><dt>Selected</dt><dd data-topo-name>payments-api</dd></div>
+              <div><dt>p99</dt><dd data-topo-p99>212 ms ▲31%</dd></div>
+              <div><dt>Calls</dt><dd data-topo-calls>gateway → ledger, queue</dd></div>
+            </dl>
+          </div>
+        </article>
+
+        <!-- Traces -->
+        <article class="card spot card-traces reveal">
+          <div class="card-copy">
+            <p class="card-kicker">Traces</p>
+            <h3 class="card-title">Traces that read like a timeline</h3>
+            <p class="card-text">Spans from 14 services line up on one clock, so gaps and retries are obvious.</p>
+          </div>
+          <div class="waterfall" role="table" aria-label="Trace for POST /checkout, 412 milliseconds">
+            <div class="wf-head" role="row"><span role="columnheader">Span</span><span class="wf-scale" role="columnheader"><span>0 ms</span><span>412 ms</span></span></div>
+            <div class="wf-row is-root" role="row" style="--s:0;--w:100;--d:0"><span class="wf-name" role="cell">POST /checkout</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">412</span></span></div>
+            <div class="wf-row" role="row" style="--s:2;--w:7;--d:1"><span class="wf-name" role="cell">auth.verify</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">28</span></span></div>
+            <div class="wf-row" role="row" style="--s:10;--w:12;--d:1"><span class="wf-name" role="cell">cart.load</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">49</span></span></div>
+            <div class="wf-row is-slow" role="row" style="--s:23;--w:65;--d:1"><span class="wf-name" role="cell">payments.charge</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">268</span></span></div>
+            <div class="wf-row" role="row" style="--s:25;--w:10;--d:2"><span class="wf-name" role="cell">fraud.score</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">41</span></span></div>
+            <div class="wf-row" role="row" style="--s:36;--w:17;--d:2"><span class="wf-name" role="cell">ledger.write</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">70</span></span></div>
+            <div class="wf-row is-retry" role="row" style="--s:57;--w:28;--d:2"><span class="wf-name" role="cell">ledger.write <i>retry</i></span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">115</span></span></div>
+            <div class="wf-row" role="row" style="--s:89;--w:8;--d:1"><span class="wf-name" role="cell">queue.publish</span><span class="wf-track" role="cell"><span class="wf-bar"></span><span class="wf-ms">33</span></span></div>
+          </div>
+        </article>
+
+        <!-- Drift -->
+        <article class="card spot card-drift reveal">
+          <div class="card-copy">
+            <p class="card-kicker">Drift alerts</p>
+            <h3 class="card-title">Hear about drift before it’s an incident</h3>
+            <p class="card-text">Baselines are learned per service and per hour of the week, so Monday’s rush never looks like an anomaly.</p>
+          </div>
+          <div class="drift">
+            <svg class="drift-chart" viewBox="0 0 320 120" aria-hidden="true" data-drift></svg>
+            <div class="drift-note">
+              <span class="chip chip-warn">+31% p99</span>
+              <span>payments-api drifted above its baseline at <time>09:42 UTC</time></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Forecast -->
+        <article class="card spot card-forecast reveal">
+          <div class="card-copy">
+            <p class="card-kicker">Forecasts</p>
+            <h3 class="card-title">Know what a deploy will do</h3>
+            <p class="card-text">Replay seven days of real traffic against a pull request and see which budgets it would break.</p>
+          </div>
+          <svg class="fan" viewBox="0 0 320 150" aria-label="Forecast: after deploy 8f3c2e1, ledger CPU is likely to cross its 55 percent budget at the 14:00 peak." role="img" data-fan></svg>
+        </article>
+
+        <!-- OQL -->
+        <article class="card spot card-oql reveal">
+          <div class="card-copy">
+            <p class="card-kicker">OQL</p>
+            <h3 class="card-title">A query language built around time</h3>
+            <p class="card-text">OQL reads top to bottom, in the order you’d ask the question out loud.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-head"><span>slow-checkouts.oql</span><button class="code-copy" type="button" data-copy-target="#oql-sample" aria-label="Copy query"><svg class="i i-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="i i-check" aria-hidden="true"><use href="#i-check"/></svg></button></div>
+<pre id="oql-sample"><code><span class="tk-kw">from</span> spans
+<span class="tk-kw">where</span> service = <span class="tk-str">"payments-api"</span>
+  <span class="tk-kw">and</span> duration &gt; <span class="tk-num">250ms</span>
+<span class="tk-kw">group by</span> region, version
+<span class="tk-kw">orbit</span> <span class="tk-fn">p50</span>, <span class="tk-fn">p99</span> <span class="tk-kw">over</span> <span class="tk-num">15m</span>
+<span class="tk-kw">compare to</span> <span class="tk-str">last week</span></code></pre>
+          </div>
+        </article>
+
+        <!-- Integrations -->
+        <article class="card spot card-integrations reveal">
+          <div class="card-copy">
+            <p class="card-kicker">Integrations</p>
+            <h3 class="card-title">OpenTelemetry native</h3>
+            <p class="card-text">Send what you already emit. There are 190+ integrations and no proprietary agents.</p>
+          </div>
+          <ul class="monograms" aria-label="Selected integrations">
+            <li>OTel</li><li>K8s</li><li>gRPC</li><li>Kafka</li>
+            <li>PG</li><li>Redis</li><li>Envoy</li><li>NATS</li>
+            <li>Jaeger</li><li>Zipkin</li><li>Lambda</li><li class="more">+179</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Console ─────────────────────────── -->
+  <section class="section section-console" id="console" aria-labelledby="console-title">
+    <div class="wrap">
+      <header class="section-head section-head-split reveal">
+        <div>
+          <p class="eyebrow" data-scramble>Live console</p>
+          <h2 class="section-title" id="console-title">A console that <em>keeps up</em> with production.</h2>
+        </div>
+        <p class="section-lede">Pick a service, change the window or type a query. Everything here runs on simulated traffic, right in your browser.</p>
+      </header>
+
+      <div class="console reveal" data-console>
+        <div class="console-bar">
+          <div class="crumbs" aria-label="Location">
+            <span class="crumb-org"><span class="org-dot" aria-hidden="true"></span>acme-prod</span>
+            <span class="crumb-sep" aria-hidden="true">/</span>
+            <span class="crumb-svc" data-console-crumb>payments-api</span>
+            <span class="crumb-sep" aria-hidden="true">/</span>
+            <span>latency</span>
+          </div>
+          <form class="query" data-console-query role="search" aria-label="Query">
+            <label class="sr-only" for="console-query">OQL query</label>
+            <span class="query-prefix" aria-hidden="true">OQL</span>
+            <input id="console-query" name="q" type="text" spellcheck="false" autocomplete="off" value='from spans where service = "payments-api" | p50, p99 over 15m'>
+            <button class="query-run" type="submit" aria-label="Run query"><svg class="i" aria-hidden="true"><use href="#i-enter"/></svg></button>
+          </form>
+          <div class="console-controls">
+            <div class="seg" role="radiogroup" aria-label="Time window" data-console-range>
+              <button type="button" role="radio" aria-checked="true" data-range="15m">15m</button>
+              <button type="button" role="radio" aria-checked="false" data-range="1h">1h</button>
+              <button type="button" role="radio" aria-checked="false" data-range="24h">24h</button>
+            </div>
+            <button class="live-toggle" type="button" aria-pressed="true" data-console-live>
+              <span class="live-dot" aria-hidden="true"></span><span data-live-label>Live</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="console-body">
+          <aside class="console-side" aria-label="Services">
+            <p class="side-label">Services</p>
+            <ul class="svc-list" data-console-services></ul>
+          </aside>
+
+          <div class="console-main">
+            <div class="svc-head">
+              <div>
+                <h3 class="svc-name" data-console-name>payments-api</h3>
+                <p class="svc-meta"><span class="chip" data-console-status>Drifting</span><span data-console-meta>iad1 · 12 pods · v2026.10.3</span></p>
+              </div>
+              <div class="chart-legend" aria-hidden="true">
+                <span><i class="sw sw-p99"></i>p99</span>
+                <span><i class="sw sw-p50"></i>p50</span>
+                <span><i class="sw sw-slo"></i>SLO</span>
+              </div>
+            </div>
+
+            <div class="tiles" data-console-tiles>
+              <div class="tile"><p class="tile-k">Throughput</p><p class="tile-v"><span data-tile="rps">1,284</span><small>rps</small></p><p class="tile-d" data-delta="rps">+2.1%</p></div>
+              <div class="tile"><p class="tile-k">Error rate</p><p class="tile-v"><span data-tile="err">0.02</span><small>%</small></p><p class="tile-d" data-delta="err">0.00</p></div>
+              <div class="tile"><p class="tile-k">p99 latency</p><p class="tile-v"><span data-tile="p99">212</span><small>ms</small></p><p class="tile-d" data-delta="p99">+31%</p></div>
+              <div class="tile"><p class="tile-k">Apdex</p><p class="tile-v"><span data-tile="apdex">0.94</span></p><p class="tile-d" data-delta="apdex">−0.02</p></div>
+            </div>
+
+            <div class="chart-wrap">
+              <canvas class="chart" data-console-chart role="img" aria-label="Latency chart for the selected service, p50 and p99 over time against a 250 millisecond objective."></canvas>
+              <div class="chart-tip" data-console-tip hidden></div>
+            </div>
+
+            <div class="log" aria-label="Event stream">
+              <div class="log-head">
+                <span>Events</span>
+                <span class="log-hint">Hover to pause</span>
+              </div>
+              <ol class="log-list" data-console-log role="log" aria-live="off"></ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Workflow ─────────────────────────── -->
+  <section class="section" id="workflow" aria-labelledby="workflow-title">
+    <div class="wrap workflow">
+      <div class="workflow-copy">
+        <header class="section-head reveal">
+          <p class="eyebrow" data-scramble>Workflow</p>
+          <h2 class="section-title" id="workflow-title">From first span to first forecast <em>in an afternoon.</em></h2>
+        </header>
+        <ol class="steps" role="tablist" aria-label="Setup steps" data-steps>
+          <li role="presentation">
+            <button class="step" type="button" role="tab" id="step-tab-1" aria-selected="true" aria-controls="terminal" data-step="0">
+              <span class="step-n">01</span>
+              <span class="step-body">
+                <span class="step-title">Instrument</span>
+                <span class="step-text">Run one command. Orrery finds your services, adds the OpenTelemetry SDK where it’s missing and starts receiving spans.</span>
+              </span>
+              <span class="step-progress" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="presentation">
+            <button class="step" type="button" role="tab" id="step-tab-2" aria-selected="false" aria-controls="terminal" data-step="1" tabindex="-1">
+              <span class="step-n">02</span>
+              <span class="step-body">
+                <span class="step-title">Observe</span>
+                <span class="step-text">Every service has a baseline within the hour. Watch any of them from the terminal, the console or your editor.</span>
+              </span>
+              <span class="step-progress" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="presentation">
+            <button class="step" type="button" role="tab" id="step-tab-3" aria-selected="false" aria-controls="terminal" data-step="2" tabindex="-1">
+              <span class="step-n">03</span>
+              <span class="step-body">
+                <span class="step-title">Forecast</span>
+                <span class="step-text">Before you merge, replay real traffic against the change and see which budgets it moves.</span>
+              </span>
+              <span class="step-progress" aria-hidden="true"></span>
+            </button>
+          </li>
+        </ol>
+      </div>
+
+      <div class="terminal reveal" id="terminal" role="tabpanel" aria-labelledby="step-tab-1" data-terminal>
+        <div class="terminal-bar">
+          <span class="terminal-title"><svg class="i" aria-hidden="true"><use href="#i-terminal"/></svg> ~/acme/platform</span>
+          <button class="terminal-replay" type="button" data-terminal-replay>Replay</button>
+        </div>
+        <pre class="terminal-body" aria-live="off"><code data-terminal-out><span class="t-prompt">$</span> npx orrery init
+<span class="t-ok">✓</span> Detected 14 services in ./deploy <span class="t-dim">(kubernetes)</span>
+<span class="t-ok">✓</span> Wrote orrery.config.ts
+<span class="t-ok">✓</span> Added OpenTelemetry SDK to 9 services
+<span class="t-acc">→</span> First spans arriving in about 40 s</code><span class="t-caret" aria-hidden="true"></span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Coverage ─────────────────────────── -->
+  <section class="section section-coverage" id="coverage" aria-labelledby="coverage-title">
+    <div class="wrap coverage">
+      <figure class="globe-stage reveal" data-globe>
+        <canvas class="globe-canvas" role="img" aria-label="A rotating globe drawn as an armillary sphere, with collector regions marked and traffic arcs between them. Drag to rotate."></canvas>
+        <figcaption class="globe-hint"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg> Drag to rotate</figcaption>
+      </figure>
+      <div class="coverage-copy">
+        <header class="section-head reveal">
+          <p class="eyebrow" data-scramble>Coverage</p>
+          <h2 class="section-title" id="coverage-title">34 regions. <em>One clock.</em></h2>
+          <p class="section-lede">Collectors run close to your users, so spans land in the region they started in. Every event is stamped against the same disciplined clock, so cross-region traces line up to the microsecond.</p>
+        </header>
+        <ul class="facts reveal">
+          <li><strong>&lt; 50 µs</strong><span>clock skew after correction</span></li>
+          <li><strong>&lt; 30 s</strong><span>regional failover</span></li>
+          <li><strong>US · EU · APAC</strong><span>data residency</span></li>
+        </ul>
+        <div class="regions reveal">
+          <table class="region-table">
+            <caption class="sr-only">Selected collector regions with ingest latency</caption>
+            <thead><tr><th scope="col">Region</th><th scope="col">Location</th><th scope="col" class="num">Ingest p50</th><th scope="col">Status</th></tr></thead>
+            <tbody data-regions>
+              <tr data-region="iad"><td><code>iad1</code></td><td>Ashburn, US</td><td class="num">3.1 ms</td><td><span class="status ok">Nominal</span></td></tr>
+              <tr data-region="fra"><td><code>fra1</code></td><td>Frankfurt, DE</td><td class="num">2.8 ms</td><td><span class="status ok">Nominal</span></td></tr>
+              <tr data-region="nrt"><td><code>nrt1</code></td><td>Tokyo, JP</td><td class="num">3.4 ms</td><td><span class="status ok">Nominal</span></td></tr>
+              <tr data-region="gru"><td><code>gru1</code></td><td>São Paulo, BR</td><td class="num">4.0 ms</td><td><span class="status ok">Nominal</span></td></tr>
+              <tr data-region="syd"><td><code>syd1</code></td><td>Sydney, AU</td><td class="num">3.7 ms</td><td><span class="status warn">Degraded</span></td></tr>
+              <tr data-region="jnb"><td><code>jnb1</code></td><td>Johannesburg, ZA</td><td class="num">4.6 ms</td><td><span class="status ok">Nominal</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Field reports ─────────────────────────── -->
+  <section class="section section-reports" id="reports" aria-labelledby="reports-title">
+    <div class="wrap">
+      <header class="section-head section-head-split reveal">
+        <div>
+          <p class="eyebrow" data-scramble>Field reports</p>
+          <h2 class="section-title" id="reports-title">What changes when the <em>whole system</em> is visible.</h2>
+        </div>
+        <div class="carousel-controls" data-carousel-controls>
+          <button class="icon-btn icon-btn-lg" type="button" data-carousel-prev aria-label="Previous report"><svg class="i" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+          <span class="carousel-count" aria-hidden="true"><span data-carousel-index>01</span> / 04</span>
+          <button class="icon-btn icon-btn-lg" type="button" data-carousel-next aria-label="Next report"><svg class="i" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </header>
+
+      <div class="carousel reveal" data-carousel aria-roledescription="carousel" aria-label="Field reports">
+        <div class="slides" aria-live="polite">
+          <figure class="slide is-active" aria-roledescription="slide" aria-label="1 of 4">
+            <blockquote><p>We used to hear about slow checkouts from support tickets. Now the drift alert fires twenty minutes before anyone notices, and it already names the service.</p></blockquote>
+            <figcaption class="slide-meta">
+              <span class="avatar" aria-hidden="true">ML</span>
+              <span><strong>Mara Lindqvist</strong><span>Staff SRE, Quayside</span></span>
+            </figcaption>
+            <div class="slide-stat"><strong>20 min</strong><span>earlier warning on checkout latency</span></div>
+          </figure>
+          <figure class="slide" aria-roledescription="slide" aria-label="2 of 4" hidden>
+            <blockquote><p>A forecast caught a connection-pool regression during code review. That one pull request would have taken down month-end billing.</p></blockquote>
+            <figcaption class="slide-meta">
+              <span class="avatar" aria-hidden="true">TF</span>
+              <span><strong>Tomás Ferreira</strong><span>Platform Lead, Cobalt Rail</span></span>
+            </figcaption>
+            <div class="slide-stat"><strong>0</strong><span>billing incidents since adopting forecasts</span></div>
+          </figure>
+          <figure class="slide" aria-roledescription="slide" aria-label="3 of 4" hidden>
+            <blockquote><p>On-call stopped dreading the pager. Mean time to resolution went from 47 minutes to 17 in one quarter.</p></blockquote>
+            <figcaption class="slide-meta">
+              <span class="avatar" aria-hidden="true">DO</span>
+              <span><strong>Dami Okafor</strong><span>Engineering Manager, Oakmere</span></span>
+            </figcaption>
+            <div class="slide-stat"><strong>−64%</strong><span>mean time to resolution</span></div>
+          </figure>
+          <figure class="slide" aria-roledescription="slide" aria-label="4 of 4" hidden>
+            <blockquote><p>OQL is the first query language our product engineers picked up without a workshop. Half our dashboards are now written by people who never used to open one.</p></blockquote>
+            <figcaption class="slide-meta">
+              <span class="avatar" aria-hidden="true">WH</span>
+              <span><strong>Wen Hsu</strong><span>Principal Engineer, Tessellate</span></span>
+            </figcaption>
+            <div class="slide-stat"><strong>3×</strong><span>more engineers writing queries</span></div>
+          </figure>
+        </div>
+        <div class="carousel-progress" aria-hidden="true"><span data-carousel-bar></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Pricing ─────────────────────────── -->
+  <section class="section" id="pricing" aria-labelledby="pricing-title">
+    <div class="wrap">
+      <header class="section-head section-head-split reveal">
+        <div>
+          <p class="eyebrow" data-scramble>Pricing</p>
+          <h2 class="section-title" id="pricing-title">Pay for what you <em>observe.</em></h2>
+          <p class="section-lede">Every plan includes all six instruments. You pay for spans ingested, and longer retention never costs extra.</p>
+        </div>
+        <div class="billing" data-billing>
+          <span class="billing-label" id="billing-monthly">Monthly</span>
+          <button class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="billing-annual" data-billing-switch><span class="switch-thumb"></span></button>
+          <span class="billing-label" id="billing-annual">Annually <span class="chip chip-brass">Save 20%</span></span>
+        </div>
+      </header>
+
+      <div class="tiers">
+        <article class="tier reveal">
+          <header>
+            <p class="tier-tag">Free</p>
+            <h3 class="tier-name">Spyglass</h3>
+            <p class="tier-for">For side projects and evaluation.</p>
+          </header>
+          <div class="tier-cost">
+            <p class="tier-price"><span class="cur">$</span><span class="amt">0</span><span class="per">/ month</span></p>
+            <p class="tier-note">Free forever</p>
+          </div>
+          <a class="btn btn-outline" href="#cta">Start free</a>
+          <ul class="tier-list">
+            <li>10M spans a month</li>
+            <li>7-day retention</li>
+            <li>3 seats</li>
+            <li>Community support</li>
+          </ul>
+        </article>
+
+        <article class="tier tier-featured reveal">
+          <span class="tier-flag">Most teams start here</span>
+          <header>
+            <p class="tier-tag">Team</p>
+            <h3 class="tier-name">Observatory</h3>
+            <p class="tier-for">For product teams running production.</p>
+          </header>
+          <div class="tier-cost">
+            <p class="tier-price"><span class="cur">$</span><span class="amt" data-price data-monthly="49" data-annual="39">49</span><span class="per">/ month</span></p>
+            <p class="tier-note" data-price-note>Billed monthly</p>
+          </div>
+          <a class="btn btn-primary magnetic" href="#cta">Start 14-day trial</a>
+          <ul class="tier-list">
+            <li>100M spans included, then $0.30 per million</li>
+            <li>30-day retention</li>
+            <li>Unlimited seats</li>
+            <li>Drift alerts and deploy forecasts</li>
+            <li>SSO with Google and GitHub</li>
+          </ul>
+        </article>
+
+        <article class="tier reveal">
+          <header>
+            <p class="tier-tag">Enterprise</p>
+            <h3 class="tier-name">Array</h3>
+            <p class="tier-for">For organizations with scale and compliance needs.</p>
+          </header>
+          <div class="tier-cost">
+            <p class="tier-price tier-price-text">Custom</p>
+            <p class="tier-note">Volume pricing above 10B spans</p>
+          </div>
+          <a class="btn btn-outline" href="#cta">Talk to us</a>
+          <ul class="tier-list">
+            <li>13-month retention</li>
+            <li>SAML SSO and SCIM</li>
+            <li>Dedicated regions and data residency</li>
+            <li>Self-hosted option</li>
+            <li>99.995% uptime SLA</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="calc reveal" data-calc>
+        <div class="calc-copy">
+          <h3 class="calc-title">Estimate an Observatory bill</h3>
+          <p class="calc-text">Drag to set how many spans you send each month.</p>
+        </div>
+        <div class="calc-control">
+          <label class="calc-label" for="calc-range">Spans per month <output data-calc-spans for="calc-range">1.2B</output></label>
+          <input class="range" id="calc-range" type="range" min="0" max="1000" step="1" value="560" data-calc-range>
+          <div class="range-scale" aria-hidden="true"><span style="--p:0%">10M</span><span style="--p:27%">100M</span><span style="--p:54.1%">1B</span><span style="--p:81.1%">10B</span><span style="--p:100%">50B</span></div>
+        </div>
+        <dl class="calc-out">
+          <div><dt>Base</dt><dd data-calc-base>$49</dd></div>
+          <div><dt>Usage</dt><dd data-calc-usage>$330</dd></div>
+          <div class="calc-total"><dt>Estimated monthly</dt><dd data-calc-total>$379</dd></div>
+        </dl>
+        <p class="calc-foot" data-calc-foot>About $0.32 per million spans. Billed monthly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── Ephemeris ─────────────────────────── -->
+  <section class="section section-ephemeris" id="ephemeris" aria-labelledby="ephemeris-title">
+    <div class="wrap ephemeris">
+      <header class="section-head ephemeris-head reveal">
+        <p class="eyebrow" data-scramble>Ephemeris</p>
+        <h2 class="section-title" id="ephemeris-title">What’s moved <em>lately.</em></h2>
+        <p class="section-lede">An ephemeris is a table of where things will be. Ours lists where Orrery has been. Dates carry their Julian Day, because some habits stick.</p>
+        <a class="link-arrow" href="#" data-demo="The full changelog">Full changelog <svg class="i" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
+      </header>
+
+      <ol class="timeline">
+        <li class="entry reveal">
+          <div class="entry-when">
+            <time datetime="2026-09-30">Sep 30, 2026</time>
+            <span class="jd">JD 2461313.5</span>
+          </div>
+          <div class="entry-body">
+            <p class="entry-tag"><span class="chip chip-brass">v4.2</span> General availability</p>
+            <h3 class="entry-title">Deploy forecasts</h3>
+            <p>Replay up to seven days of production traffic against any pull request. Forecasts now cover CPU, memory and connection pools as well as latency.</p>
+          </div>
+        </li>
+        <li class="entry reveal">
+          <div class="entry-when">
+            <time datetime="2026-08-12">Aug 12, 2026</time>
+            <span class="jd">JD 2461264.5</span>
+          </div>
+          <div class="entry-body">
+            <p class="entry-tag"><span class="chip">v4.1</span> Query language</p>
+            <h3 class="entry-title">Window functions in OQL</h3>
+            <p><code>orbit</code>, <code>drift</code> and <code>compare</code> now work over sliding windows, so “p99 over the last 15 minutes, every minute” is one line.</p>
+          </div>
+        </li>
+        <li class="entry reveal">
+          <div class="entry-when">
+            <time datetime="2026-06-03">Jun 3, 2026</time>
+            <span class="jd">JD 2461194.5</span>
+          </div>
+          <div class="entry-body">
+            <p class="entry-tag"><span class="chip">v4.0</span> Console</p>
+            <h3 class="entry-title">A new console</h3>
+            <p>Rebuilt from the ground up. Every chart renders in under 100 ms, even when the query scans a billion spans.</p>
+          </div>
+        </li>
+        <li class="entry reveal">
+          <div class="entry-when">
+            <time datetime="2026-04-21">Apr 21, 2026</time>
+            <span class="jd">JD 2461151.5</span>
+          </div>
+          <div class="entry-body">
+            <p class="entry-tag"><span class="chip">v3.9</span> Regions</p>
+            <h3 class="entry-title">Santiago and Johannesburg</h3>
+            <p>Two new collector regions bring the total to 34. Teams in Chile and South Africa see ingest latency drop by about 90 ms.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── FAQ ─────────────────────────── -->
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq">
+      <header class="section-head faq-head reveal">
+        <p class="eyebrow" data-scramble>Questions</p>
+        <h2 class="section-title" id="faq-title">Before you <em>commit.</em></h2>
+        <p class="section-lede">Can’t find what you need? Press <kbd>?</kbd> for keyboard shortcuts, or <kbd data-mod-key>⌘K</kbd> to jump anywhere on this page.</p>
+      </header>
+      <div class="faq-list reveal">
+        <details name="faq" open>
+          <summary>Do I have to replace my current tracing setup?</summary>
+          <div class="faq-a"><p>No. Orrery accepts OpenTelemetry, Zipkin and Jaeger formats directly. Most teams point their existing exporters at Orrery and keep their current dashboards running while they compare.</p></div>
+        </details>
+        <details name="faq">
+          <summary>How is a span counted?</summary>
+          <div class="faq-a"><p>One span is one timed operation, such as an HTTP request or a database query. Logs and attributes attached to a span don’t count separately.</p></div>
+        </details>
+        <details name="faq">
+          <summary>Where is my data stored?</summary>
+          <div class="faq-a"><p>In the region you choose when you create a workspace: the US, the EU or APAC. Data stays in that region, backups included.</p></div>
+        </details>
+        <details name="faq">
+          <summary>What happens if I go over my plan?</summary>
+          <div class="faq-a"><p>Ingestion keeps running. On Observatory you pay the per-million rate for the extra spans. On Spyglass, Orrery samples down to your limit and warns you a few days before it starts.</p></div>
+        </details>
+        <details name="faq">
+          <summary>Can I self-host Orrery?</summary>
+          <div class="faq-a"><p>Array customers can run the full platform in their own cloud account on Kubernetes. It ships as a signed Helm chart on the same release schedule as the hosted product.</p></div>
+        </details>
+        <details name="faq">
+          <summary>How long does setup take?</summary>
+          <div class="faq-a"><p>Most teams see their first traces within 15 minutes of running <code>npx orrery init</code>. Drift baselines are ready after about an hour of traffic.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── CTA ─────────────────────────── -->
+  <section class="cta-section" id="cta" aria-labelledby="cta-title">
+    <div class="wrap">
+      <div class="cta reveal">
+        <div class="cta-rings" aria-hidden="true"></div>
+        <div class="cta-copy">
+          <h2 class="cta-title" id="cta-title">Put your stack <em>in orbit.</em></h2>
+          <p class="cta-text">Start on Spyglass for free, or bring your team on a 14-day Observatory trial. No card required.</p>
+        </div>
+        <form class="cta-form" data-cta-form novalidate>
+          <label class="sr-only" for="cta-email">Work email</label>
+          <input id="cta-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
+          <button class="btn btn-primary btn-lg magnetic" type="submit">Start observing <svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+          <p class="cta-msg" data-cta-msg role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ─────────────────────────── Footer ─────────────────────────── -->
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="#top" aria-label="Orrery, back to top">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="13" class="bm-ring"/>
+          <circle cx="16" cy="16" r="8" class="bm-ring"/>
+          <circle cx="16" cy="16" r="3.6" class="bm-sun"/>
+          <g class="bm-orbit bm-orbit-a"><circle cx="29" cy="16" r="2.1" class="bm-planet"/></g>
+          <g class="bm-orbit bm-orbit-b"><circle cx="16" cy="8" r="1.4" class="bm-moon"/></g>
+        </svg>
+        <span class="brand-word">Orrery</span>
+      </a>
+      <p class="footer-blurb">Observability for systems in motion.</p>
+      <a class="status-pill" href="#" data-demo="The status page">
+        <span class="status-dot" aria-hidden="true"></span>All systems nominal
+      </a>
+    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div>
+        <p class="footer-h">Product</p>
+        <ul>
+          <li><a href="#instruments">Instruments</a></li>
+          <li><a href="#console">Console</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#ephemeris">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-h">Developers</p>
+        <ul>
+          <li><a href="#" data-demo="Docs">Docs</a></li>
+          <li><a href="#" data-demo="The OQL reference">OQL reference</a></li>
+          <li><a href="#" data-demo="The API reference">API</a></li>
+          <li><a href="#" data-demo="The status page">Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-h">Company</p>
+        <ul>
+          <li><a href="#" data-demo="The about page">About</a></li>
+          <li><a href="#" data-demo="Careers">Careers</a></li>
+          <li><a href="#" data-demo="The security page">Security</a></li>
+          <li><a href="#" data-demo="Contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="wrap footer-meta-wrap"><div class="footer-meta">
+    <div class="footer-clock" aria-label="Current time">
+      <span class="clock-k">UTC</span><span data-utc>00:00:00</span>
+      <span class="clock-k">JD</span><span data-jd>2461325.50000</span>
+    </div>
+    <div class="theme-seg seg" role="radiogroup" aria-label="Theme" data-theme-seg>
+      <button type="button" role="radio" aria-checked="true" data-theme-choice="system" aria-label="System theme"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg></button>
+      <button type="button" role="radio" aria-checked="false" data-theme-choice="light" aria-label="Light theme"><svg class="i" aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <button type="button" role="radio" aria-checked="false" data-theme-choice="dark" aria-label="Dark theme"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></button>
+    </div>
+    <p class="footer-hint">Press <kbd>?</kbd> for shortcuts</p>
+  </div></div>
+
+  <div class="wrap footer-legal">
+    <p>© 2026 Orrery Labs. A concept site: Orrery, its customers and everyone quoted here are fictional.</p>
+  </div>
+
+  <div class="wordmark" aria-hidden="true" data-wordmark>
+    <span>O</span><span>r</span><span>r</span><span>e</span><span>r</span><span>y</span>
+  </div>
+</footer>
+
+<!-- ─────────────────────────── Overlays ─────────────────────────── -->
+<dialog class="palette" id="palette" aria-label="Command palette">
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="palette-input" type="text" placeholder="Jump to a section or run a command…" autocomplete="off" spellcheck="false"
+        role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list">
+      <kbd>esc</kbd>
+    </div>
+    <ul class="palette-list" id="palette-list" role="listbox" aria-label="Commands"></ul>
+    <div class="palette-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> to move</span>
+      <span><kbd>↵</kbd> to run</span>
+      <span class="palette-foot-hint">Try typing “syzygy”</span>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="shortcuts" id="shortcuts" aria-labelledby="shortcuts-title">
+  <div class="shortcuts-box">
+    <header class="shortcuts-head">
+      <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+      <button class="icon-btn" type="button" data-close-dialog aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <dl class="shortcut-list">
+      <div><dt>Command palette</dt><dd><kbd data-mod-key>⌘K</kbd> or <kbd>/</kbd></dd></div>
+      <div><dt>Toggle theme</dt><dd><kbd>T</kbd></dd></div>
+      <div><dt>Pause or resume motion</dt><dd><kbd>M</kbd></dd></div>
+      <div><dt>Align the planets</dt><dd><kbd>A</kbd></dd></div>
+      <div><dt>Go to Instruments</dt><dd><kbd>G</kbd> <kbd>I</kbd></dd></div>
+      <div><dt>Go to Console</dt><dd><kbd>G</kbd> <kbd>C</kbd></dd></div>
+      <div><dt>Go to Pricing</dt><dd><kbd>G</kbd> <kbd>P</kbd></dd></div>
+      <div><dt>Back to top</dt><dd><kbd>G</kbd> <kbd>G</kbd></dd></div>
+      <div><dt>This panel</dt><dd><kbd>?</kbd></dd></div>
+    </dl>
+    <p class="shortcuts-foot">There’s one more, older than the web. <span class="konami" aria-hidden="true">↑ ↑ ↓ ↓ ← → ← → B A</span></p>
+  </div>
+</dialog>
+
+<button class="to-top" type="button" data-to-top aria-label="Back to top">
+  <svg class="to-top-ring" viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="24" r="21" class="ring-bg"/>
+    <circle cx="24" cy="24" r="21" class="ring-fg" data-progress-ring/>
+    <circle cx="45" cy="24" r="2.4" class="ring-planet" data-progress-planet/>
+  </svg>
+  <svg class="i" aria-hidden="true"><use href="#i-arrow-up"/></svg>
+</button>
+
+<div class="toasts" aria-live="polite" aria-atomic="false" data-toasts></div>
+
+</body>
+</html>

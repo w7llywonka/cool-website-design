@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lost signal · Orrery</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('orrery-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+<style>
+  .lost { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding-block: 48px; text-align: left; }
+  .lost-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: center; }
+  .lost-orbit { position: relative; aspect-ratio: 1; max-width: 420px; width: 100%; justify-self: center; }
+  .lost-orbit svg { width: 100%; height: 100%; overflow: visible; }
+  .lost-orbit .o { fill: none; stroke: var(--line-2); }
+  .lost-orbit .o-dash { stroke-dasharray: 3 6; }
+  .lost-orbit .sun { fill: var(--brass); }
+  .lost-orbit .glow { fill: var(--brass-soft); }
+  .lost-orbit .planet { fill: var(--fg); }
+  .lost-orbit .stray { fill: var(--warn); }
+  .lost-orbit .tick { stroke: var(--fg-3); }
+  .lost-orbit text { font: 500 11px var(--font-mono); fill: var(--fg-3); letter-spacing: .06em; }
+  .spin { transform-origin: 200px 200px; transform-box: view-box; }
+  .drift { transform-origin: 200px 200px; transform-box: view-box; }
+  @media (prefers-reduced-motion: no-preference) {
+    .spin-a { animation: bm-spin 14s linear infinite; }
+    .spin-b { animation: bm-spin 26s linear infinite; }
+    .drift { animation: lost-drift 9s ease-in-out infinite alternate; }
+  }
+  @keyframes lost-drift { from { transform: translate(0, 0) rotate(0); } to { transform: translate(26px, -18px) rotate(8deg); } }
+  .lost h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(3rem, 2rem + 5vw, 6rem); line-height: 1; letter-spacing: -0.03em; margin-top: 18px; }
+  .lost h1 em { color: var(--brass); }
+  .lost p.lede { margin-top: 20px; color: var(--fg-2); font-size: 1.125rem; max-width: 38ch; }
+  .lost .actions { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .lost .coords { margin-top: 36px; font: 400 .75rem/1.6 var(--font-mono); color: var(--fg-3); }
+  @media (max-width: 760px) { .lost-inner { grid-template-columns: minmax(0, 1fr); } .lost-orbit { max-width: 280px; order: -1; } }
+</style>
+</head>
+<body>
+<main class="lost">
+  <div class="wrap lost-inner">
+    <div>
+      <p class="eyebrow">Error 404 · Lost signal</p>
+      <h1>This page drifted <em>out of orbit.</em></h1>
+      <p class="lede">The address you followed doesn’t point at anything we know about. It may have moved, or it may never have existed.</p>
+      <div class="actions">
+        <a class="btn btn-primary btn-lg" href="./">Back to Orrery</a>
+        <a class="btn btn-outline btn-lg" href="./#ephemeris">See what changed</a>
+      </div>
+      <p class="coords">Last known position · θ 404.0° · r ∞</p>
+    </div>
+    <div class="lost-orbit" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <circle class="glow" cx="200" cy="200" r="60"/>
+        <circle class="o" cx="200" cy="200" r="90"/>
+        <circle class="o" cx="200" cy="200" r="140"/>
+        <circle class="o o-dash" cx="200" cy="200" r="188"/>
+        <circle class="sun" cx="200" cy="200" r="18"/>
+        <g class="spin spin-a"><circle class="planet" cx="290" cy="200" r="7"/></g>
+        <g class="spin spin-b"><circle class="planet" cx="200" cy="60" r="9"/></g>
+        <g class="drift">
+          <circle class="stray" cx="356" cy="88" r="6"/>
+          <line class="tick" x1="350" y1="70" x2="330" y2="50"/>
+          <text x="262" y="44">404</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</main>
+</body>
+</html>
